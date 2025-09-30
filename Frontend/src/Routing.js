@@ -1,13 +1,13 @@
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-const route = "http://localhost:6000";
 
 export const API = {
     Login: {
-        url: `${route}/api/Login`,
+        url: `${API_BASE}/api/auth/login`,
         method: `POST`
     },
     Register: {
-        url: `${route}/api/Register`,
+        url: `${API_BASE}/api/Register`,
         method: `POST`
     }
 }
