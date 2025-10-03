@@ -3,10 +3,45 @@ const router = express.Router();
 const supabase = require('../supabaseClient');
 
 // Signup
+// router.post('/signup', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   // Input validation
+//   if (!email || !password) {
+//     return res.status(400).json({ error: 'Email and password are required' });
+//   }
+
+//   if (!email.includes('@') || !email.includes('.')) {
+//     return res.status(400).json({ error: 'Please provide a valid email address' });
+//   }
+
+//   if (password.length < 6) {
+//     return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+//   }
+
+//   try {
+//     // const { data, error } = await supabase.auth.signUp({ email, password });
+//     // if (error) throw error;
+
+
+//     const { data, error } = await supabase.auth.signUp({
+//       email,
+//       password,
+//       options: {
+//         emailRedirectTo: `${process.env.FRONTEND_URL}/auth/callback`, // 👈 frontend route
+//       },
+//     });
+//     res.json({ message: 'Signup successful!', user: data.user })
+//   } catch (err) {
+//     res.status(400).json({ error: err.message });
+//   }
+// });
+
+
 router.post('/signup', async (req, res) => {
   const { email, password } = req.body;
 
-  // Input validation
+  // ✅ Input validation
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required' });
   }
@@ -20,14 +55,26 @@ router.post('/signup', async (req, res) => {
   }
 
   try {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${process.env.FRONTEND_URL}/auth/callback`, // 👈 frontend route
+      },
+    });
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
 
-    res.json({ message: 'Signup successful!', user: data.user });
+    res.status(200).json({
+      message: 'Signup successful! Please check your email to confirm your account.',
+      user: data.user,
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ error: 'Internal server error: ' + err.message });
   }
 });
+
 
 // Login
 router.post('/login', async (req, res) => {
@@ -100,9 +147,9 @@ router.post('/verify-email', async (req, res) => {
 
     if (error) throw error;
 
-    res.json({ 
-      message: 'Email verified successfully!', 
-      user: data.user 
+    res.json({
+      message: 'Email verified successfully!',
+      user: data.user
     });
   } catch (err) {
     res.status(400).json({ error: err.message });

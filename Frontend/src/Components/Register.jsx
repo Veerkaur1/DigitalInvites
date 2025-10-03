@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "../apis";
+import api from "../apis"; // simple axios instance without auth
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -24,13 +24,14 @@ const Register = () => {
         setLoading(true);
 
         try {
-            const res = await api.post("/signup", {
+            await api.post("/auth/signup", {
                 email: formData.email,
                 password: formData.password,
             });
 
-
-            setSuccess(res.data.message || "Registered successfully! Check your email.");
+            setSuccess(
+                "Registered successfully! Please check your email to confirm your account."
+            );
             setFormData({ email: "", password: "" });
         } catch (err) {
             setError(err.response?.data?.error || "Something went wrong");
@@ -92,7 +93,9 @@ const Register = () => {
             </form>
 
             {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
-            {success && <p style={{ color: "green", marginTop: "10px" }}>{success}</p>}
+            {success && (
+                <p style={{ color: "green", marginTop: "10px" }}>{success}</p>
+            )}
         </div>
     );
 };
